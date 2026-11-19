@@ -1,6 +1,8 @@
 import express from 'express'
 import {eventos} from './src/datos/eventos.js'
+import {suministros} from './src/datos/almacen.js'
 import {validacion_evento} from './src/validar.js'
+import {validacion_almacen} from './src/validar.js'
 import {buscar_id} from './src/servicios/comun.js'
 
 const app = express();
@@ -10,6 +12,18 @@ app.get('/', function(req, res) {
     // res.json(eventos);
     res.send(validacion_evento(eventos[0]));
 });
+
+app.get('/listadoAlmacen', function(req, res) {
+    res.status(200);
+    // res.json(eventos);
+    res.send(validacion_almacen(suministros[0]));
+});
+
+
+app.get('/mostrarListado', function(req, res) {
+    res.status(200);
+    res.json(eventos);
+})
 
 app.get('/mostrarListado', function(req, res) {
     res.status(200);

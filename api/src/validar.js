@@ -87,8 +87,10 @@ const validacion_eventoArtista = (artista) => {
     return listaErroresArtista;
 };
 
+
 export const validacion_almacen = (producto) => {
     const listaErrores = [];
+    const categoriasPermitidas = ['bebida', 'comida', 'otros'];
 
     if (producto.nombre === '' || producto.nombre === null || producto.nombre === undefined) {
         listaErrores.push('Error, el nombre del producto está vacío');
@@ -96,6 +98,8 @@ export const validacion_almacen = (producto) => {
 
     if (producto.categoria === '' || producto.categoria === null || producto.categoria === undefined) {
         listaErrores.push('Error, la categoría del producto está vacía');
+    } else if (!categoriasPermitidas.includes(producto.categoria)) {
+        listaErrores.push('Error, la categoría del producto no está permitida');
     }
 
     if (producto.unidad === '' || producto.unidad === null || producto.unidad === undefined) {
@@ -110,5 +114,41 @@ export const validacion_almacen = (producto) => {
         listaErrores.push('Error, el mínimo del producto no puede ser negativo');
     }
 
+    if (!producto.compra || typeof producto.compra.tipo !== 'string' || producto.compra.tipo.trim() === '') {
+        listaErrores.push('Error, el tipo de compra del producto no es válido');
+    }
+
+    if (!producto.compra || typeof producto.compra.unidades !== 'number' || producto.compra.unidades <= 0) {
+        listaErrores.push('Error, las unidades por caja o paquete deben ser mayor que 0');
+    }
+
+    if (!producto.compra || typeof producto.compra.costo !== 'number' || producto.compra.costo <= 0) {
+        listaErrores.push('Error, el costo de compra debe ser mayor que 0');
+    }
+
+    if (!producto.proveedor || producto.proveedor.nombre === '' || producto.proveedor.nombre === null || producto.proveedor.nombre === undefined) {
+        listaErrores.push('Error, el nombre del proveedor está vacío');
+    }
+
+    if (!producto.proveedor || typeof producto.proveedor.telefono !== 'number' || producto.proveedor.telefono <= 0) {
+        listaErrores.push('Error, el teléfono del proveedor no es válido');
+    }
+
+    if (!producto.consumo || typeof producto.consumo !== 'object') {
+        listaErrores.push('Error, el objeto de consumo del producto no es válido');
+    } else {
+        const erroresConsumo = tipos.flatMap((tipo) => {
+        const valor = producto.consumo[tipo];
+        if (typeof valor !== 'number' || Number.isNaN(valor) || valor < 0) {
+            return [
+            `Error, el consumo para el tipo "${tipo}" debe ser un número mayor o igual a 0`
+            ];
+        }
+        return [];
+        });
+
+        listaErrores.push(...erroresConsumo);
+    }
+
     return listaErrores;
-}
+};
