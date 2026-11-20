@@ -17,6 +17,10 @@ import {filtrar_eventos} from './src/servicios/eventos.js';
 import {paginar_eventos} from './src/servicios/eventos.js';
 import {proyectar_eventos} from './src/servicios/eventos.js';
 import {enriquecer_evento, crear_evento, reemplazar_evento, actualizar_evento_parcial, guardar_evento_actualizado, eliminar_evento, cancelar_evento, pagar_alquiler_evento, generar_resumen_eventos, obtener_deudas_organizador, listar_actuaciones, obtener_calendario_mes, responder_preguntas_sala} from './src/servicios/eventos.js';
+import {crear_producto, actualizar_producto_parcial, guardar_producto_actualizado, eliminar_producto, calcular_necesidades_evento, calcular_prevision_almacen, calcular_valor_almacen, descontar_stock_evento} from './src/servicios/almacen.js';
+import {listar_pedidos, enriquecer_pedido, crear_pedido_manual, generar_pedido_automatico, recibir_pedido} from './src/servicios/pedidos.js';
+
+
 
 
 
@@ -131,6 +135,94 @@ app.get('/probar-crud-informes', (req, res) => {
         calendarioNoviembre: obtener_calendario_mes(eventos, '2026-11'),
         preguntas: responder_preguntas_sala(eventos, suministros),
         evento7Enriquecido: enriquecer_evento(evento7Actual)
+    });
+});
+
+
+
+app.get('/probar-almacen', (req, res) => {
+    const siguienteId = aumentar_id(suministros);
+    const copiaProducto1 = {
+        ...buscar_id(suministros, 1),
+        nombre: 'Refresco de Cola Prueba'
+    };
+
+    const listaTrasCrear = crear_producto(suministros, copiaProducto1, siguienteId);
+    const producto1Actual = buscar_id(listaTrasCrear, 1);
+    const producto1Patch = actualizar_producto_parcial(producto1Actual, {
+        id: 999,
+        minimo: 60,
+        proveedor: { nombre: 'Proveedor Editado' }
+    });
+    const listaTrasPatch = guardar_producto_actualizado(listaTrasCrear, 1, producto1Patch);
+    const listaTrasEliminar = eliminar_producto(listaTrasPatch, siguienteId);
+
+    const evento9 = buscar_id(eventos, 9);
+    const necesidadesEvento9 = calcular_necesidades_evento(evento9, suministros);
+    const prevision = calcular_prevision_almacen(eventos, suministros);
+    const valorAlmacen = calcular_valor_almacen(suministros);
+    const stockTrasEvento9 = descontar_stock_evento(suministros, evento9);
+
+    res.status(200).json({
+        longitudOriginal: suministros.length,
+        longitudTrasCrearYBorrar: listaTrasEliminar.length,
+        producto1PatchMinimo: buscar_id(listaTrasPatch, 1)?.minimo,
+        producto1ProveedorConservado: buscar_id(listaTrasPatch, 1)?.proveedor.telefono,
+        necesidadesEvento9,
+        prevision,
+        valorAlmacen,
+        disponiblesCocacolaTrasEvento9: buscar_id(stockTrasEvento9, 1)?.disponibles,
+        disponiblesOriginalCocacola: buscar_id(suministros, 1)?.disponibles
+    });
+});
+
+
+app.get('/probar-pedidos', (req, res) => {
+    const todosOrdenados = listar_pedidos(pedidos);
+    const soloPendientes = listar_pedidos(pedidos, 'true');
+    const pedido2Detallado = enriquecer_pedido(pedidos[1], suministros);
+
+    const nuevoIdManual = aumentar_id(pedidos);
+    const resultadoManual = crear_pedido_manual(
+        pedidos,
+        {
+        lineas: [
+            { productoId: 1, cajas: 2 },
+            { productoId: 2, cajas: 1 }
+        ]
+        },
+        suministros,
+        nuevoIdManual
+    );
+
+    const nuevoIdAuto = aumentar_id(resultadoManual.pedidos);
+    const resultadoAuto = generar_pedido_automatico(
+        resultadoManual.pedidos,
+        eventos,
+        suministros,
+        nuevoIdAuto
+    );
+
+    const recibirPedido2 = recibir_pedido(pedidos, suministros, 2);
+    const recibirPedido2Repetido = recibir_pedido(
+        recibirPedido2.pedidos,
+        recibirPedido2.productos,
+        2
+    );
+    const recibirPedido1YaRecibido = recibir_pedido(pedidos, suministros, 1);
+
+    res.status(200).json({
+        longitudPedidosOriginal: pedidos.length,
+        longitudProductosOriginal: suministros.length,
+        todosOrdenados,
+        soloPendientes,
+        pedido2Detallado,
+        pedidoManualCreado: resultadoManual.pedido,
+        pedidoAutomaticoCreado: resultadoAuto ? resultadoAuto.pedido : null,
+        recibirPedido2Estado: recibirPedido2.pedido?.recibido,
+        recibirPedido2AguaDisponible: recibirPedido2.productos?.find((p) => p.id === 4)?.disponibles,
+        recibirPedido2RepetidoError: recibirPedido2Repetido.error,
+        recibirPedido1Error: recibirPedido1YaRecibido.error
     });
 });
 
