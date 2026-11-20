@@ -5,7 +5,12 @@ import {suministros} from './datos/almacen.js'
 export const validacion_evento = (evento) => {
     const listaErrores = [];
     const patronFecha = /^\d{4}-\d{2}-\d{2}$/;
-    const patronHora = /^([01]\d|2[0-3]):[0-5]\d$/;;
+    const patronHora = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+    if (!evento || typeof evento !== 'object') {
+        listaErrores.push("Error, el evento no es válido");
+        return listaErrores;
+    }
 
     if (evento.titulo === '' || evento.titulo === null || evento.titulo === undefined) {
         listaErrores.push("Error, el titulo del evento está vacio");
@@ -19,50 +24,76 @@ export const validacion_evento = (evento) => {
         listaErrores.push("Error, el tipo no está permitido");
     }
 
-    if (evento.entrada.pago === true && evento.entrada.precio <= 0) {
-        listaErrores.push("Error, si la entrada es de paga, tiene que costar mas de 0 euros")
+    if (typeof evento.celebrado !== 'boolean') {
+        listaErrores.push("Error, el estado de celebrado debe ser booleano");
     }
 
-    if (evento.entrada.pago === false && evento.entrada.precio > 0) {
-        listaErrores.push("Error, si la entrada es gratuita, no puede costar mas de 0 euros")
+    if (!Array.isArray(evento.etiquetas)) {
+        listaErrores.push("Error, las etiquetas deben ser un array");
+    }
+
+    if (!evento.entrada || typeof evento.entrada !== 'object') {
+        listaErrores.push("Error, los datos de entrada no son válidos");
+    } else {
+        if (evento.entrada.pago === true && evento.entrada.precio <= 0) {
+            listaErrores.push("Error, si la entrada es de paga, tiene que costar mas de 0 euros");
+        }
+
+        if (evento.entrada.pago === false && evento.entrada.precio > 0) {
+            listaErrores.push("Error, si la entrada es gratuita, no puede costar mas de 0 euros");
+        }
     }
 
     if (evento.gente > aforo || evento.gente <= 0) {
         listaErrores.push(`Error, el aforo de la sala debe ser del 1 al ${aforo}`);
     }
 
-    if (evento.cancelado.estado === true && !evento.cancelado.razon) {
-        listaErrores.push("Error, si el evento está cancelado, se necesita un motivo");
-    }
-
-    if (evento.cancelado.estado === false && evento.cancelado.razon !== '') {
-        listaErrores.push("Error, si el evento no está cancelado, no puede haber un motivo");
-    }
-
-    if (evento.cobro.se_cobra === false) {
-        if (evento.cobro.monto_cobro > 0 || evento.cobro.cobrado === true) {
-            listaErrores.push("Error, si el alquiler no se cobra, no se puede dar un monto ni marcarse como cobrado");
+    if (!evento.cancelado || typeof evento.cancelado !== 'object') {
+        listaErrores.push("Error, los datos de cancelación no son válidos");
+    } else {
+        if (evento.cancelado.estado === true && !evento.cancelado.razon) {
+            listaErrores.push("Error, si el evento está cancelado, se necesita un motivo");
         }
-    } else if (evento.cobro.se_cobra === true) {
-        if (evento.cobro.monto_cobro === 0) {
-            listaErrores.push("Error, si el alquiler se cobra, se debe dar un monto superior a 0");
+
+        if (evento.cancelado.estado === false && evento.cancelado.razon !== '') {
+            listaErrores.push("Error, si el evento no está cancelado, no puede haber un motivo");
         }
     }
 
-    if (typeof evento.fecha.dia !== 'string' || patronFecha.test(evento.fecha.dia) === false) {
-        listaErrores.push("Error, formato de fecha inválido");
+    if (!evento.cobro || typeof evento.cobro !== 'object') {
+        listaErrores.push("Error, los datos de cobro no son válidos");
+    } else {
+        if (evento.cobro.se_cobra === false) {
+            if (evento.cobro.monto_cobro > 0 || evento.cobro.cobrado === true) {
+                listaErrores.push("Error, si el alquiler no se cobra, no se puede dar un monto ni marcarse como cobrado");
+            }
+        } else if (evento.cobro.se_cobra === true) {
+            if (evento.cobro.monto_cobro <= 0) {
+                listaErrores.push("Error, si el alquiler se cobra, se debe dar un monto superior a 0");
+            }
+        }
     }
 
-    if (typeof evento.fecha.hora !== 'string' || patronHora.test(evento.fecha.hora) === false) {
-        listaErrores.push("Error, formato de hora inválido");
+    if (!evento.fecha || typeof evento.fecha !== 'object') {
+        listaErrores.push("Error, los datos de fecha no son válidos");
+    } else {
+        if (typeof evento.fecha.dia !== 'string' || patronFecha.test(evento.fecha.dia) === false) {
+            listaErrores.push("Error, formato de fecha inválido");
+        }
+
+        if (typeof evento.fecha.hora !== 'string' || patronHora.test(evento.fecha.hora) === false) {
+            listaErrores.push("Error, formato de hora inválido");
+        }
     }
 
-    if (Array.isArray(evento.artistas) && evento.artistas.length > 0) {
+    if (evento.artistas !== undefined && evento.artistas !== null && !Array.isArray(evento.artistas)) {
+        listaErrores.push("Error, artistas debe ser un array");
+    } else if (Array.isArray(evento.artistas) && evento.artistas.length > 0) {
         const erroresArtistas = evento.artistas.flatMap((artista, index) => {
             const errores = validacion_eventoArtista(artista);
-            
+
             return errores.map(error => `Artista: [${index}]: ${error}`);
-        })
+        });
 
         listaErrores.push(...erroresArtistas);
     }
@@ -72,17 +103,23 @@ export const validacion_evento = (evento) => {
 
 const validacion_eventoArtista = (artista) => {
     const listaErroresArtista = [];
+
+    if (!artista || typeof artista !== 'object') {
+        listaErroresArtista.push("Error, el artista no es válido");
+        return listaErroresArtista;
+    }
+
     if (artista.nombre === '' || artista.nombre === null || artista.nombre === undefined) {
         listaErroresArtista.push("Error, el nombre del artista no puede estar vacío");
-    };
+    }
 
     if (artista.pago <= 0) {
         listaErroresArtista.push("Error, se debe dar un pago al artista");
-    };
+    }
 
     if (artista.duracion <= 0) {
         listaErroresArtista.push("Error, el artista necesita minutos de presentacion");
-    };
+    }
 
     return listaErroresArtista;
 };
@@ -148,6 +185,58 @@ export const validacion_almacen = (producto) => {
         });
 
         listaErrores.push(...erroresConsumo);
+    }
+
+    return listaErrores;
+};
+
+
+export const validacion_lineaPedido = (linea, productos) => {
+    const listaErroresLinea = [];
+
+    if (!linea || typeof linea !== 'object') {
+        listaErroresLinea.push('Error, la línea de pedido no es válida');
+        return listaErroresLinea;
+    }
+
+    const productoEncontrado = productos.find(
+        (producto) => producto.id === linea.productoId
+    );
+
+    if (!productoEncontrado) {
+        listaErroresLinea.push('Error, el producto de la línea no existe');
+    }
+
+    if (!Number.isInteger(linea.cajas) || linea.cajas <= 0) {
+        listaErroresLinea.push('Error, cajas debe ser un entero mayor que 0');
+    }
+
+    return listaErroresLinea;
+};
+
+export const validacion_pedido = (pedido, productos = suministros) => {
+    const listaErrores = [];
+    const patronFecha = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!pedido || typeof pedido !== 'object') {
+        listaErrores.push('Error, el pedido no es válido');
+        return listaErrores;
+    }
+
+    if (pedido.fecha === '' || pedido.fecha === null || pedido.fecha === undefined || typeof pedido.fecha !== 'string' || patronFecha.test(pedido.fecha) === false) {
+        listaErrores.push('Error, la fecha del pedido no es válida');
+    }
+
+    if (!Array.isArray(pedido.lineas) || pedido.lineas.length === 0) {
+        listaErrores.push('Error, el pedido debe tener al menos una línea');
+    } else {
+        const erroresLineas = pedido.lineas.flatMap((linea, index) => {
+        const errores = validacion_lineaPedido(linea, productos);
+
+        return errores.map((error) => `lineas[${index}]: ${error}`);
+        });
+
+        listaErrores.push(...erroresLineas);
     }
 
     return listaErrores;

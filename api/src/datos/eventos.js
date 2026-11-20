@@ -1,8 +1,11 @@
 const evento1 = {
+    id: 1,
     titulo: 'Risas de Viernes',
     descripcion: 'Monólogos de humor local',
     tipo: 'monologo',
     gente: 90,
+    celebrado: true,
+    etiquetas: ['humor', 'noche'],
     fecha: {
         dia: '2026-02-14',
         hora: '21:00'
@@ -26,17 +29,21 @@ const evento1 = {
     },
     artistas: [
         {
-            nombre: 'Alicia',
-            pago: 250,
-            duracion: 30
-        }]
+        nombre: 'Alicia',
+        pago: 250,
+        duracion: 30
+        }
+    ]
 };
 
 const evento2 = {
+    id: 2,
     titulo: 'Noche de Comedia',
     descripcion: 'Monólogos de nuevos talentos',
-    tipo: 'Monologo',
+    tipo: 'monologo',
     gente: 65,
+    celebrado: false,
+    etiquetas: ['humor', 'euskera'],
     fecha: {
         dia: '2026-11-20',
         hora: '20:30'
@@ -60,28 +67,26 @@ const evento2 = {
     },
     artistas: [
         {
-            nombre: 'Carlos Risas',
-            pago: 180,
-            duracion: 45
+        nombre: 'Carlos Risas',
+        pago: 180,
+        duracion: 45
         },
         {
-            nombre: 'Norte Sonoro',
-            pago: 250,
-            duracion: 45
-        },
-        {
-            nombre: 'Luna Roja',
-            pago: 250,
-            duracion: 45
+        nombre: 'Norte Sonoro',
+        pago: 250,
+        duracion: 45
         }
     ]
 };
 
 const evento3 = {
+    id: 3,
     titulo: 'Rock en Directo',
     descripcion: 'Concierto de bandas emergentes',
-    tipo: 'Concierto',
+    tipo: 'concierto',
     gente: 150,
+    celebrado: true,
+    etiquetas: ['rock', 'directo'],
     fecha: {
         dia: '2026-03-15',
         hora: '22:00'
@@ -105,31 +110,29 @@ const evento3 = {
     },
     artistas: [
         {
-            nombre: 'Los Eléctricos',
-            pago: 300,
-            duracion: 60
+        nombre: 'Los Eléctricos',
+        pago: 300,
+        duracion: 60
         },
         {
-            nombre: 'The Waves',
-            pago: 250,
-            duracion: 45
-        },
-        {
-            nombre: 'Norte Sonoro',
-            pago: 250,
-            duracion: 45
+        nombre: 'The Waves',
+        pago: 250,
+        duracion: 45
         }
     ]
 };
 
 const evento4 = {
-    titulo: 'Teatro entre Amigos',
-    descripcion: 'Representación de una comedia contemporánea',
-    tipo: 'Teatro',
-    gente: 80,
+    id: 4,
+    titulo: 'Fiesta de Primavera',
+    descripcion: 'Sesión nocturna con música pinchada',
+    tipo: 'fiesta',
+    gente: 120,
+    celebrado: false,
+    etiquetas: ['fiesta', 'terraza'],
     fecha: {
         dia: '2026-04-10',
-        hora: '19:00'
+        hora: '23:30'
     },
     entrada: {
         pago: false,
@@ -148,21 +151,24 @@ const evento4 = {
         estado: true,
         razon: 'Problemas técnicos en el escenario'
     },
-    artistas: null
+    artistas: []
 };
 
 const evento5 = {
-    titulo: 'Taller de Improvisación',
-    descripcion: 'Actividad participativa de teatro improvisado',
-    tipo: 'Taller',
-    gente: 25,
+    id: 5,
+    titulo: 'Fiesta Electrónica',
+    descripcion: 'Sesión de DJ hasta madrugada',
+    tipo: 'fiesta',
+    gente: 130,
+    celebrado: true,
+    etiquetas: ['electronica', 'noche'],
     fecha: {
         dia: '2026-05-18',
-        hora: '17:00'
+        hora: '23:00'
     },
     entrada: {
-        pago: false,
-        precio: 0
+        pago: true,
+        precio: 10
     },
     organizador: {
         nombre: 'Cultura Viva',
@@ -171,36 +177,23 @@ const evento5 = {
     cobro: {
         se_cobra: false,
         monto_cobro: 0,
-        cobrado: true
+        cobrado: false
     },
     cancelado: {
         estado: false,
         razon: ''
     },
-    artistas: [
-        {
-            nombre: 'Laura Impro',
-            pago: 100,
-            duracion: 60
-        },
-        {
-            nombre: 'Miguel Escena',
-            pago: 100,
-            duracion: 60
-        },
-        {
-            nombre: 'Norte Sonoro',
-            pago: 250,
-            duracion: 45
-        }
-    ]
+    artistas: []
 };
 
 const evento6 = {
+    id: 6,
     titulo: 'Acústico de Primavera',
     descripcion: 'Concierto íntimo de música acústica',
-    tipo: 'Concierto',
+    tipo: 'concierto',
     gente: 45,
+    celebrado: false,
+    etiquetas: ['acustico', 'terraza'],
     fecha: {
         dia: '2026-06-12',
         hora: '20:00'
@@ -224,166 +217,29 @@ const evento6 = {
     },
     artistas: [
         {
-            nombre: 'Ane Soul',
-            pago: 200,
-            duracion: 40
+        nombre: 'Ane Soul',
+        pago: 200,
+        duracion: 40
         },
         {
-            nombre: 'Jon Guitar',
-            pago: 150,
-            duracion: 40
-        },
-        {
-            nombre: 'Norte Sonoro',
-            pago: 250,
-            duracion: 45
+        nombre: 'Jon Guitar',
+        pago: 150,
+        duracion: 40
         }
     ]
 };
 
 const evento7 = {
-    titulo: 'Clásicos del Teatro',
-    descripcion: 'Representación de una obra clásica',
-    tipo: 'Teatro',
-    gente: 110,
+    id: 7,
+    titulo: 'Noche de Karaoke',
+    descripcion: 'Canta tus temas favoritos en directo',
+    tipo: 'karaoke',
+    gente: 85,
+    celebrado: false,
+    etiquetas: ['karaoke', 'euskera'],
     fecha: {
         dia: '2026-07-22',
-        hora: '19:30'
-    },
-    entrada: {
-        pago: true,
-        precio: 15
-    },
-    organizador: {
-        nombre: 'Teatro Abierto',
-        contacto: 'info@teatroabierto.org'
-    },
-    cobro: {
-        se_cobra: true,
-        monto_cobro: 250,
-        cobrado: true
-    },
-    cancelado: {
-        estado: false,
-        razon: ''
-    },
-    artistas: [
-        {
-            nombre: 'Marta Escena',
-            pago: 220,
-            duracion: 50
-        },
-        {
-            nombre: 'Pablo Actor',
-            pago: 220,
-            duracion: 50
-        },
-        {
-            nombre: 'Irene Drama',
-            pago: 180,
-            duracion: 50
-        }
-    ]
-};
-
-const evento8 = {
-    titulo: 'Pintura Creativa',
-    descripcion: 'Taller abierto de pintura para principiantes',
-    tipo: 'Taller',
-    gente: 30,
-    fecha: {
-        dia: '2026-09-05',
-        hora: '11:00'
-    },
-    entrada: {
-        pago: false,
-        precio: 0
-    },
-    organizador: {
-        nombre: 'Arte para Todos',
-        contacto: 'hola@arteparatodos.org'
-    },
-    cobro: {
-        se_cobra: true,
-        monto_cobro: 80,
-        cobrado: false
-    },
-    cancelado: {
-        estado: false,
-        razon: ''
-    },
-    artistas: [
-        {
-        nombre: 'Elena Pincel',
-        pago: 120,
-        duracion: 120
-        },
-        {
-            nombre: 'Norte Sonoro',
-            pago: 250,
-            duracion: 45
-        },
-        {
-            nombre: 'Luna Roja',
-            pago: 250,
-            duracion: 45
-        }
-    ]
-};
-
-const evento9 = {
-    titulo: 'Teatro de Barrio',
-    descripcion: 'Obra teatral gratuita para familias',
-    tipo: 'Teatro',
-    gente: 95,
-    fecha: {
-        dia: '2026-12-15',
-        hora: '18:00'
-    },
-    entrada: {
-        pago: false,
-        precio: 0
-    },
-    organizador: {
-        nombre: 'Cultura Viva',
-        contacto: 'contacto@culturaviva.org'
-    },
-    cobro: {
-        se_cobra: false,
-        monto_cobro: 0,
-        cobrado: true
-    },
-    cancelado: {
-        estado: false,
-        razon: ''
-    },
-    artistas: [
-        {
-            nombre: 'Nerea Teatro',
-            pago: 150,
-            duracion: 45
-        },
-        {
-            nombre: 'Ander Escena',
-            pago: 150,
-            duracion: 45
-        },
-        {
-            nombre: 'Norte Sonoro',
-            pago: 250,
-            duracion: 45
-        }
-    ]
-};
-
-const evento10 = {
-    titulo: 'Festival de Música Local',
-    descripcion: 'Actuaciones de artistas locales',
-    tipo: 'Concierto',
-    gente: 200,
-    fecha: {
-        dia: '2026-10-20',
-        hora: '21:00'
+        hora: '21:30'
     },
     entrada: {
         pago: false,
@@ -395,7 +251,77 @@ const evento10 = {
     },
     cobro: {
         se_cobra: true,
-        monto_cobro: 300,
+        monto_cobro: 110,
+        cobrado: false
+    },
+    cancelado: {
+        estado: false,
+        razon: ''
+    },
+    artistas: []
+};
+
+const evento8 = {
+    id: 8,
+    titulo: 'Karaoke de Verano',
+    descripcion: 'Sesión abierta de karaoke por grupos',
+    tipo: 'karaoke',
+    gente: 70,
+    celebrado: false,
+    etiquetas: ['karaoke', 'verano'],
+    fecha: {
+        dia: '2026-09-05',
+        hora: '20:00'
+    },
+    entrada: {
+        pago: false,
+        precio: 0
+    },
+    organizador: {
+        nombre: 'Arte para Todos',
+        contacto: 'hola@arteparatodos.org'
+    },
+    cobro: {
+        se_cobra: false,
+        monto_cobro: 0,
+        cobrado: false
+    },
+    cancelado: {
+        estado: false,
+        razon: ''
+    },
+    artistas: [
+        {
+        nombre: 'Elena Voz',
+        pago: 120,
+        duracion: 90
+        }
+    ]
+};
+
+const evento9 = {
+    id: 9,
+    titulo: 'Gran Quiz Cultural',
+    descripcion: 'Concurso por equipos con preguntas de cultura general',
+    tipo: 'quiz',
+    gente: 95,
+    celebrado: false,
+    etiquetas: ['quiz', 'grupos'],
+    fecha: {
+        dia: '2026-11-12',
+        hora: '19:30'
+    },
+    entrada: {
+        pago: false,
+        precio: 0
+    },
+    organizador: {
+        nombre: 'Cultura Viva',
+        contacto: 'contacto@culturaviva.org'
+    },
+    cobro: {
+        se_cobra: true,
+        monto_cobro: 95,
         cobrado: true
     },
     cancelado: {
@@ -404,19 +330,57 @@ const evento10 = {
     },
     artistas: [
         {
-            nombre: 'Luna Roja',
-            pago: 250,
-            duracion: 45
+        nombre: 'Nerea Presenta',
+        pago: 150,
+        duracion: 60
         },
         {
-            nombre: 'Norte Sonoro',
-            pago: 250,
-            duracion: 45
+        nombre: 'Ander Sonido',
+        pago: 150,
+        duracion: 60
+        }
+    ]
+};
+
+const evento10 = {
+    id: 10,
+    titulo: 'Quiz Temático de Cine',
+    descripcion: 'Trivial por equipos sobre cine y series',
+    tipo: 'quiz',
+    gente: 80,
+    celebrado: false,
+    etiquetas: ['quiz', 'cine'],
+    fecha: {
+        dia: '2026-12-18',
+        hora: '20:00'
+    },
+    entrada: {
+        pago: true,
+        precio: 6
+    },
+    organizador: {
+        nombre: 'Asociación Humor',
+        contacto: 'info@humor.org'
+    },
+    cobro: {
+        se_cobra: true,
+        monto_cobro: 140,
+        cobrado: true
+    },
+    cancelado: {
+        estado: false,
+        razon: ''
+    },
+    artistas: [
+        {
+        nombre: 'Luna Roja',
+        pago: 200,
+        duracion: 45
         },
         {
-            nombre: 'Ander Escena',
-            pago: 150,
-            duracion: 45
+        nombre: 'Norte Sonoro',
+        pago: 200,
+        duracion: 45
         }
     ]
 };
