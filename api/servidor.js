@@ -11,6 +11,13 @@ import {calcular_camareros} from './src/servicios/eventos.js';
 import {calcular_coste_personal} from './src/servicios/eventos.js';
 import {calcular_coste_artistas} from './src/servicios/eventos.js';
 import {calcular_balance_evento} from './src/servicios/eventos.js';
+import {enriquecer_eventos} from './src/servicios/eventos.js';
+import {ordenar_eventos} from './src/servicios/eventos.js';
+import {filtrar_eventos} from './src/servicios/eventos.js';
+import {paginar_eventos} from './src/servicios/eventos.js';
+import {proyectar_eventos} from './src/servicios/eventos.js';
+
+
 
 const app = express();
 
@@ -65,6 +72,23 @@ app.get('/probar-servicios', (req, res) => {
         costeArtistas: calcular_coste_artistas(eventoFiesta),
         balance: calcular_balance_evento(eventoFiesta)
         }
+    });
+});
+
+app.get('/probar-consulta', (req, res) => {
+    const enriquecidos = enriquecer_eventos(eventos);
+    const filtrados = filtrar_eventos(enriquecidos, req.query);
+    const ordenados = ordenar_eventos(filtrados, req.query.orden, req.query.dir);
+    const pagina = Number(req.query.pagina) || 1;
+    const limite = Number(req.query.limite) || 10;
+    const paginados = paginar_eventos(ordenados, pagina, limite);
+    const datos = proyectar_eventos(paginados, req.query.campos);
+
+    res.status(200).json({
+        total: filtrados.length,
+        pagina,
+        limite,
+        datos
     });
 });
 
