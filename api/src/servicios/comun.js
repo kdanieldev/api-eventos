@@ -1,13 +1,20 @@
+//Devuelve el elemento un array que coincida con el id indicado
 export const buscar_id = (array, id) => {
-    return array.find(a => a.id === id);
+    if (!Array.isArray(array)) {
+        return undefined;
+    }
+
+    return array.find((elemento) => elemento.id === id);
 };
 
-const aumentar_id = (array) => {
-    if (array.length < 1) {
+//Buscq el siguiente id disponible para un array a partir del mayor id existente
+export const aumentar_id = (array) => {
+    if (!Array.isArray(array) || array.length < 1) {
         return 1;
-    } else {
-        const listaID = array.map(a => a.id);
-        const mayorID = Math.max(...listaID);
-        return mayorID + 1;
     }
+
+    const listaID = array.map((elemento) => elemento.id);
+    const mayorID = Math.max(...listaID);
+
+    return mayorID + 1;
 };
