@@ -216,3 +216,233 @@ export const proyectar_eventos = (listaEventos, campos) => {
         return proyeccion;
     });
 };
+
+
+//HAce un nuevo eventp con id creado y copia sin mutar el array original
+export const crear_evento = (listaEventos, nuevoEvento, siguienteId) => {
+    const eventoLimpio = {
+        ...nuevoEvento,
+        id: siguienteId,
+        celebrado: Boolean(nuevoEvento.celebrado),
+        etiquetas: Array.isArray(nuevoEvento.etiquetas) ? [...nuevoEvento.etiquetas] : [],
+        fecha: { ...nuevoEvento.fecha },
+        entrada: { ...nuevoEvento.entrada },
+        organizador: { ...nuevoEvento.organizador },
+        cobro: { ...nuevoEvento.cobro },
+        cancelado: { ...nuevoEvento.cancelado },
+        artistas: Array.isArray(nuevoEvento.artistas)
+        ? nuevoEvento.artistas.map((artista) => ({ ...artista }))
+        : []
+    };
+    return [...listaEventos, eventoLimpio];
+};
+
+//Cambia un evento que ya existe conservando su id original
+export const reemplazar_evento = (listaEventos, id, datosReemplazo) => {
+    const eventoReemplazado = {
+        ...datosReemplazo,
+        id,
+        celebrado: Boolean(datosReemplazo.celebrado),
+        etiquetas: Array.isArray(datosReemplazo.etiquetas) ? [...datosReemplazo.etiquetas] : [],
+        fecha: { ...datosReemplazo.fecha },
+        entrada: { ...datosReemplazo.entrada },
+        organizador: { ...datosReemplazo.organizador },
+        cobro: { ...datosReemplazo.cobro },
+        cancelado: { ...datosReemplazo.cancelado },
+        artistas: Array.isArray(datosReemplazo.artistas)
+        ? datosReemplazo.artistas.map((artista) => ({ ...artista }))
+        : []
+    };
+    return listaEventos.map((evento) => (evento.id === id ? eventoReemplazado : evento));
+};
+
+//Junta los campos recibidos sobre un evento existente sin mutar el original
+export const actualizar_evento_parcial = (eventoActual, cambios) => {
+    const {
+        id,
+        camareros,
+        costePersonal,
+        costeArtistas,
+        balance,
+        fecha,
+        entrada,
+        organizador,
+        cobro,
+        cancelado,
+        etiquetas,
+        artistas,
+        ...restoCambios
+    } = cambios || {};
+
+    return {
+        ...eventoActual,
+        ...restoCambios,
+        fecha: fecha ? { ...eventoActual.fecha, ...fecha } : { ...eventoActual.fecha },
+        entrada: entrada ? { ...eventoActual.entrada, ...entrada } : { ...eventoActual.entrada },
+        organizador: organizador
+        ? { ...eventoActual.organizador, ...organizador }
+        : { ...eventoActual.organizador },
+        cobro: cobro ? { ...eventoActual.cobro, ...cobro } : { ...eventoActual.cobro },
+        cancelado: cancelado
+        ? { ...eventoActual.cancelado, ...cancelado }
+        : { ...eventoActual.cancelado },
+        etiquetas: Array.isArray(etiquetas) ? [...etiquetas] : [...eventoActual.etiquetas],
+        artistas: Array.isArray(artistas)
+        ? artistas.map((artista) => ({ ...artista }))
+        : eventoActual.artistas.map((artista) => ({ ...artista }))
+    };
+};
+
+// Sustituye un evento actualizado dentro de la lista sin mutar el array original
+export const guardar_evento_actualizado = (listaEventos, id, eventoActualizado) => {
+    return listaEventos.map((evento) => (evento.id === id ? eventoActualizado : evento));
+};
+
+//Quita un evento por id devolviendo un nuevo array sin mutar el original
+export const eliminar_evento = (listaEventos, id) => {
+    return listaEventos.filter((evento) => evento.id !== id);
+};
+
+//Cancela un evento diciendo el motivo sin mutar el evento original
+export const cancelar_evento = (evento, motivo) => {
+    return {
+        ...evento,
+        etiquetas: [...evento.etiquetas],
+        fecha: { ...evento.fecha },
+        entrada: { ...evento.entrada },
+        organizador: { ...evento.organizador },
+        cobro: { ...evento.cobro },
+        cancelado: {
+        estado: true,
+        razon: motivo
+        },
+        artistas: evento.artistas.map((artista) => ({ ...artista }))
+    };
+};
+
+//Da el alquiler de un evento como pagado sin mutar el evento original
+export const pagar_alquiler_evento = (evento) => {
+    return {
+        ...evento,
+        etiquetas: [...evento.etiquetas],
+        fecha: { ...evento.fecha },
+        entrada: { ...evento.entrada },
+        organizador: { ...evento.organizador },
+        cobro: {
+        ...evento.cobro,
+        cobrado: true
+        },
+        cancelado: { ...evento.cancelado },
+        artistas: evento.artistas.map((artista) => ({ ...artista }))
+    };
+};
+
+//Hace el resumen de eventos evitando NaN cuando la lista esta vacia
+export const generar_resumen_eventos = (listaEventos) => {
+    const enriquecidos = enriquecer_eventos(listaEventos);
+    const total = enriquecidos.length;
+
+    if (total === 0) {
+        return {
+        total: 0,
+        cancelados: 0,
+        celebrados: 0,
+        mediaGentePrevista: 0,
+        balancePrevistoNoCancelados: 0
+        };
+    }
+
+    const cancelados = enriquecidos.filter((e) => e.cancelado.estado === true).length;
+    const celebrados = enriquecidos.filter((e) => e.celebrado === true).length;
+    const sumaGente = enriquecidos.reduce((acc, e) => acc + e.gente, 0);
+    const balanceNoCancelados = enriquecidos
+        .filter((e) => e.cancelado.estado === false)
+        .reduce((acc, e) => acc + e.balance, 0);
+
+    return {
+        total,
+        cancelados,
+        celebrados,
+        mediaGentePrevista: sumaGente / total,
+        balancePrevistoNoCancelados: balanceNoCancelados
+    };
+};
+
+//Calcula el alquiler pendiente agrupado por organizador devolviendo a los que deben dinero
+export const obtener_deudas_organizador = (listaEventos) => {
+    const pendientes = listaEventos.filter(
+        (e) => e.cancelado.estado === false && e.cobro.se_cobra === true && e.cobro.cobrado === false
+    );
+
+    const acumulado = pendientes.reduce((acc, e) => {
+        const nombre = e.organizador.nombre;
+        const deudaActual = acc[nombre] || 0;
+
+        return {
+        ...acc,
+        [nombre]: deudaActual + e.cobro.monto_cobro
+        };
+    }, {});
+
+    return Object.entries(acumulado)
+        .filter(([, deuda]) => deuda > 0)
+        .map(([organizador, deudaPendiente]) => ({organizador,deudaPendiente}));
+};
+
+//Devuelve las actuaciones con datos del evento ordenadas de mayor a menor
+export const listar_actuaciones = (listaEventos) => {
+    const actuaciones = listaEventos.flatMap((evento) =>
+        evento.artistas.map((artista) => ({
+        artista: artista.nombre,
+        cache: artista.pago,
+        duracionMin: artista.duracion,
+        eventoId: evento.id,
+        tituloEvento: evento.titulo,
+        fechaEvento: evento.fecha.dia
+        }))
+    );
+
+    return [...actuaciones].sort((a, b) => b.cache - a.cache);
+};
+
+//devuelve los eventos no cancelados de un mes ordenados por fecha y hora
+export const obtener_calendario_mes = (listaEventos, mes) => {
+    const delMes = listaEventos.filter(
+        (evento) => evento.cancelado.estado === false && evento.fecha.dia.startsWith(mes)
+    );
+
+    const ordenados = [...delMes].sort((a, b) => {
+        const diffDia = a.fecha.dia.localeCompare(b.fecha.dia);
+        if (diffDia !== 0) {
+        return diffDia;
+        }
+        return a.fecha.hora.localeCompare(b.fecha.hora);
+    });
+
+    return ordenados.map((evento) => ({
+        fecha: evento.fecha.dia,
+        hora: evento.fecha.hora,
+        titulo: evento.titulo,
+        tipo: evento.tipo
+    }));
+};
+
+//Responde a las tres preguntas rapidas de la sala con valores booleanos
+export const responder_preguntas_sala = (listaEventos, listaProductos) => {
+    const hayAlquilerSinCobrar = listaEventos.some(
+        (e) => e.cancelado.estado === false && e.cobro.se_cobra === true && e.cobro.cobrado === false
+    );
+
+    const todoAlmacenSobreMinimo = listaProductos.every(
+        (producto) => producto.disponibles > producto.minimo
+    );
+
+    const eventosConArtistas = listaEventos.filter((e) => e.artistas.length > 0);
+    const todosConMasDeUnaActuacion = eventosConArtistas.every((e) => e.artistas.length > 1);
+
+    return {
+        hayAlquilerSinCobrar,
+        todoAlmacenSobreMinimo,
+        todosConMasDeUnaActuacion
+    };
+};

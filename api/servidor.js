@@ -16,6 +16,7 @@ import {ordenar_eventos} from './src/servicios/eventos.js';
 import {filtrar_eventos} from './src/servicios/eventos.js';
 import {paginar_eventos} from './src/servicios/eventos.js';
 import {proyectar_eventos} from './src/servicios/eventos.js';
+import {enriquecer_evento, crear_evento, reemplazar_evento, actualizar_evento_parcial, guardar_evento_actualizado, eliminar_evento, cancelar_evento, pagar_alquiler_evento, generar_resumen_eventos, obtener_deudas_organizador, listar_actuaciones, obtener_calendario_mes, responder_preguntas_sala} from './src/servicios/eventos.js';
 
 
 
@@ -91,6 +92,50 @@ app.get('/probar-consulta', (req, res) => {
         datos
     });
 });
+
+
+app.get('/probar-crud-informes', (req, res) => {
+    const nuevoId = aumentar_id(eventos);
+    const copiaEvento1 = {...buscar_id(eventos, 1),
+        titulo: 'Nuevo Monólogo de Prueba'
+    };
+
+    const listaTrasCrear = crear_evento(eventos, copiaEvento1, nuevoId);
+    const listaTrasReemplazar = reemplazar_evento(listaTrasCrear, nuevoId, {...copiaEvento1,
+        titulo: 'Monólogo Reemplazado'
+    });
+
+    const evento7Actual = buscar_id(listaTrasReemplazar, 7);
+    const evento7Patch = actualizar_evento_parcial(evento7Actual, {
+        id: 999,
+        balance: 12345,
+        entrada: { precio: 5 }
+    });
+    const listaTrasPatch = guardar_evento_actualizado(listaTrasReemplazar, 7, evento7Patch);
+    const listaTrasEliminar = eliminar_evento(listaTrasPatch, nuevoId);
+
+    const evento7Cancelado = cancelar_evento(evento7Actual, 'Prueba de cancelación');
+    const evento7Pagado = pagar_alquiler_evento(evento7Actual);
+
+    res.status(200).json({
+        longitudOriginal: eventos.length,
+        longitudTrasCrearYBorrar: listaTrasEliminar.length,
+        evento7PatchPrecio: buscar_id(listaTrasPatch, 7)?.entrada.precio,
+        evento7PatchIdConservado: buscar_id(listaTrasPatch, 7)?.id,
+        evento7Cancelado: evento7Cancelado.cancelado,
+        evento7Pagado: evento7Pagado.cobro.cobrado,
+        resumen: generar_resumen_eventos(eventos),
+        resumenVacio: generar_resumen_eventos([]),
+        deudas: obtener_deudas_organizador(eventos),
+        actuaciones: listar_actuaciones(eventos),
+        calendarioNoviembre: obtener_calendario_mes(eventos, '2026-11'),
+        preguntas: responder_preguntas_sala(eventos, suministros),
+        evento7Enriquecido: enriquecer_evento(evento7Actual)
+    });
+});
+
+
+
 
 app.listen(4000, function() {
     console.log("El servidor se ha abierto en el puerto: 4000");
