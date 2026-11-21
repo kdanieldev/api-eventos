@@ -1,0 +1,182 @@
+@baseUrl = http://localhost:4000
+
+### 1. Eventos: listado
+GET {{baseUrl}}/api/eventos
+
+### 2. Filtrar tipo
+GET {{baseUrl}}/api/eventos?tipo=concierto
+
+### 3. Filtrar precio
+GET {{baseUrl}}/api/eventos?precioMin=5&precioMax=15
+
+### 4. Filtrar gratis
+GET {{baseUrl}}/api/eventos?gratis=true
+
+### 5. Filtrar texto
+GET {{baseUrl}}/api/eventos?texto=karaoke
+
+### 6. Filtrar etiqueta
+GET {{baseUrl}}/api/eventos?etiqueta=euskera
+
+### 7. Filtrar fechas
+GET {{baseUrl}}/api/eventos?desde=2026-03-01&hasta=2026-11-30
+
+### 8. Filtrar organizador
+GET {{baseUrl}}/api/eventos?organizador=Humor
+
+### 9. Filtrar artista
+GET {{baseUrl}}/api/eventos?artista=Norte
+
+### 10. Filtrar cancelados
+GET {{baseUrl}}/api/eventos?cancelado=false
+
+### 11. Alquiler pendiente
+GET {{baseUrl}}/api/eventos?alquilerPendiente=true
+
+### 12. Minimo de camareros
+GET {{baseUrl}}/api/eventos?minCamareros=4
+
+### 13. Ordenar
+GET {{baseUrl}}/api/eventos?orden=balance&dir=desc
+
+### 14. Paginar
+GET {{baseUrl}}/api/eventos?pagina=1&limite=3
+
+### 15. Seleccionar campos
+GET {{baseUrl}}/api/eventos?campos=titulo,fecha
+
+### 16. Filtros combinados
+GET {{baseUrl}}/api/eventos?gratis=true&cancelado=false&orden=gente&dir=desc&campos=titulo,gente
+
+### 17. Filtros combinados
+GET {{baseUrl}}/api/eventos?tipo=monologo&alquilerPendiente=true&pagina=1&limite=5
+
+### 18. Resumen
+GET {{baseUrl}}/api/eventos/resumen
+
+### 19. Deudas
+GET {{baseUrl}}/api/eventos/deudas
+
+### 20. Actuaciones
+GET {{baseUrl}}/api/eventos/actuaciones
+
+### 21. Calendario
+GET {{baseUrl}}/api/eventos/calendario?mes=2026-11
+
+### 22. Preguntas
+GET {{baseUrl}}/api/eventos/preguntas
+
+### 23. Necesidades
+GET {{baseUrl}}/api/eventos/9/necesidades
+
+### 24. Detalle
+GET {{baseUrl}}/api/eventos/1
+
+### 25. Crear evento
+POST {{baseUrl}}/api/eventos
+Content-Type: application/json
+
+{
+    "titulo": "Cena Privada de Prueba",
+    "descripcion": "Evento privado de equipo",
+    "tipo": "privado",
+    "gente": 40,
+    "celebrado": false,
+    "etiquetas": ["privado", "cena"],
+    "fecha": { "dia": "2026-12-20", "hora": "21:00" },
+    "entrada": { "pago": false, "precio": 0 },
+    "organizador": { "nombre": "Empresa Test", "contacto": "test@empresa.org" },
+    "cobro": { "se_cobra": true, "monto_cobro": 250, "cobrado": false },
+    "cancelado": { "estado": false, "razon": "" },
+    "artistas": []
+}
+
+### 26. Reemplazar evento
+PUT {{baseUrl}}/api/eventos/7
+Content-Type: application/json
+
+{
+    "titulo": "Noche de Karaoke Actualizada",
+    "descripcion": "Karaoke con repertorio ampliado",
+    "tipo": "karaoke",
+    "gente": 85,
+    "celebrado": false,
+    "etiquetas": ["karaoke", "euskera"],
+    "fecha": { "dia": "2026-07-22", "hora": "21:30" },
+    "entrada": { "pago": false, "precio": 0 },
+    "organizador": { "nombre": "Bilbao Music", "contacto": "info@bilbaomusic.org" },
+    "cobro": { "se_cobra": true, "monto_cobro": 110, "cobrado": false },
+    "cancelado": { "estado": false, "razon": "" },
+    "artistas": []
+}
+
+### 27. Actualizar evento
+PATCH {{baseUrl}}/api/eventos/7
+Content-Type: application/json
+
+{
+    "gente": 90
+}
+
+### 28. Cancelar evento
+PATCH {{baseUrl}}/api/eventos/8/cancelar
+Content-Type: application/json
+
+{
+    "motivo": "Cancelacion de prueba"
+}
+
+### 29. Pagar alquiler
+PATCH {{baseUrl}}/api/eventos/7/pagar-alquiler
+
+### 30. Celebrar evento
+PATCH {{baseUrl}}/api/eventos/8/celebrar
+
+### 31. Eliminar evento
+DELETE {{baseUrl}}/api/eventos/10
+
+### 32. Productos filtrados
+GET {{baseUrl}}/api/productos?categoria=bebida&bajoMinimo=true
+
+### 33. Valor del almacén
+GET {{baseUrl}}/api/productos/valor
+
+### 34. Previsión
+GET {{baseUrl}}/api/productos/prevision
+
+### 35. Detalle de producto
+GET {{baseUrl}}/api/productos/1
+
+### 36. Crear producto
+POST {{baseUrl}}/api/productos
+Content-Type: application/json
+
+{
+    "nombre": "Cerveza sin alcohol",
+    "categoria": "bebida",
+    "unidad": "lata",
+    "disponibles": 60,
+    "minimo": 30,
+    "compra": { "tipo": "caja", "unidades": 24, "costo": 18 },
+    "proveedor": { "nombre": "Bebidas Norte", "telefono": 655443322 },
+    "consumo": {
+        "monologo": 1,
+        "concierto": 1,
+        "fiesta": 2,
+        "karaoke": 1,
+        "quiz": 1,
+        "privado": 1
+    }
+}
+
+### 37. Pedidos pendientes
+GET {{baseUrl}}/api/pedidos?pendiente=true
+
+### 38. Pedido automático
+POST {{baseUrl}}/api/pedidos/automatico
+
+### 39. Recibir pedido
+PATCH {{baseUrl}}/api/pedidos/2/recibir
+
+### 40. Error: id no válido
+GET {{baseUrl}}/api/eventos/abc
